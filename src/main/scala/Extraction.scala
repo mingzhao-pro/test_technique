@@ -19,7 +19,9 @@ object Extraction {
   def readFile(file: String): Iterator[((String, String), String, String)] = {
     val Splitter = ","
     Source.fromInputStream(this.getClass.getResourceAsStream(file)).getLines()
-          .map(_.split(Splitter)).map(x => ((x(0), x(1)), x(2), x(3))) // (userId, ItemId), rating, time
+          .map(_.split(Splitter))
+          .filter(_.size >= 4) // in case line is not valid
+          .map(x => ((x(0), x(1)), x(2), x(3))) // (userId, ItemId), rating, time
   }
 
   def filePrinter(fileName: String, lines: mutable.Map[String, Int]) = {
@@ -97,7 +99,7 @@ object Extraction {
     var userIdIndice = -1
     var productIdIndice = -1
 
-    for (x <- validLines) {
+    validLines.foreach(x => {
       val userIdString = x._1._1
       val userId = getIndice(userIdString, userIdIndice, userIdMap)
       userIdIndice = userId._2
@@ -111,7 +113,7 @@ object Extraction {
         case Some(i) => userProductRatingMap += (key -> (i + x._2))
         case None => userProductRatingMap += (key -> x._2)
       }
-    }
+    })
 
     filePrinter(FilePathPre + UserIdFile, userIdMap)
     filePrinter(FilePathPre + ProductIdFile, productIdMap)

@@ -97,7 +97,7 @@ object Extraction {
     var userIdIndice = -1
     var productIdIndice = -1
 
-    validLines.foreach(x => {
+    for (x <- validLines) {
       val userIdString = x._1._1
       val userId = getIndice(userIdString, userIdIndice, userIdMap)
       userIdIndice = userId._2
@@ -111,7 +111,7 @@ object Extraction {
         case Some(i) => userProductRatingMap += (key -> (i + x._2))
         case None => userProductRatingMap += (key -> x._2)
       }
-    })
+    }
 
     filePrinter(FilePathPre + UserIdFile, userIdMap)
     filePrinter(FilePathPre + ProductIdFile, productIdMap)
